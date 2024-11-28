@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { EventsModule } from './events/events.module';
 import { AuthModule } from './auth/auth.module';
+import { SeederModule } from './seeders/events/seeder.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
     MongooseModule.forRoot(process.env.MONGO_URI),
     EventsModule,
     AuthModule,
+    SeederModule,
   ],
   controllers: [],
   providers: [],

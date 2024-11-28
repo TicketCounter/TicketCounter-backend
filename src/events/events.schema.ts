@@ -14,7 +14,7 @@ export class Event extends Document {
   date: Date;
 
   @Prop([String])
-  participants: string[]; // Array of participant IDs
+  participants: string[];
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);
