@@ -1,4 +1,3 @@
-// src/events/schemas/event.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -12,6 +11,9 @@ export class Event extends Document {
 
   @Prop({ required: true })
   date: Date;
+
+  @Prop({ default: Date.now })
+  creation_date: Date;
 
   @Prop([String])
   participants: string[];
