@@ -34,15 +34,6 @@ export class EventsService {
     }
   }
 
-  async update(id: string, newEvent: object): Promise<Event> {
-    try {
-      const eventId = new Types.ObjectId(id);
-      return await this.eventModel.findByIdAndUpdate(eventId, newEvent, { new: true }).exec();
-    } catch (error) {
-      throw new Error(`Error updating event: ${error.message}`);
-    }
-  }
-
   async delete(id: string): Promise<Event> {
     try {
       const eventId = new Types.ObjectId(id);
