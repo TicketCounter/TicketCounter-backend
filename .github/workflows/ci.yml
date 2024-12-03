@@ -1,0 +1,45 @@
+name: NestJS CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: env
+        run: |
+          echo "JWT_SECRET=secret" >> .env
+          echo "JWT_EXPIRATION=1d" >> .env
+          echo "MONGO_URI=mongodb://localhost:27017/nest" >> .env
+          echo "PORT=3000" >> .env
+
+      - name: Run tests
+        run: |
+          npm test
