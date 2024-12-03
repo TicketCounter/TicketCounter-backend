@@ -44,6 +44,7 @@ export class EventsController {
   @Get('/')
   @UseGuards(JwtAuthGuard)
   async findAll() {
+    
     return this.eventsService.findAll();
   }
 
