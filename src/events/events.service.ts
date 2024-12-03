@@ -9,6 +9,7 @@ export class EventsService {
     @InjectModel(Event.name) private eventModel: Model<Event>,
   ) {}
 
+  // service methods
   async createEvent(createEventDto: any): Promise<Event> {
     try {
       const newEvent = new this.eventModel(createEventDto);
