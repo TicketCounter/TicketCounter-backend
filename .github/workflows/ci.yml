@@ -33,7 +33,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: env
+      - name: Create .env file
         run: |
           echo "JWT_SECRET=secret" >> .env
           echo "JWT_EXPIRATION=1d" >> .env
