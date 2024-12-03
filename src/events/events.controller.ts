@@ -34,7 +34,7 @@ export class EventsController {
     return this.eventsService.addParticipant(id, participant.name, participant.phone);
   }
 
-  @Delete('removeParticipant')
+  @Post('removeParticipant')
   @UseGuards(JwtAuthGuard)
   async removeParticipant(@Body() body: { id: string; participantId: string }) {
     const { id, participantId } = body;
@@ -44,7 +44,7 @@ export class EventsController {
   @Get('/')
   @UseGuards(JwtAuthGuard)
   async findAll() {
-    
+
     return this.eventsService.findAll();
   }
 

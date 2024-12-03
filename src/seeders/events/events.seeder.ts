@@ -9,10 +9,8 @@ export class EventSeeder {
   constructor(@InjectModel(Event.name) private eventModel: Model<Event>) {}
 
   async seed() {
-    // Clear the existing data
     await this.eventModel.deleteMany();
 
-    // Generate dummy events
     const events = Array.from({ length: 10 }, () => ({
       title: faker.company.catchPhrase(),
       description: faker.lorem.paragraph(),
@@ -24,7 +22,6 @@ export class EventSeeder {
       })),
     }));
 
-    // Insert events into the database
     await this.eventModel.insertMany(events);
     console.log('Seeded 10 dummy events!');
   }

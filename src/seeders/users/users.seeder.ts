@@ -10,10 +10,8 @@ export class UserSeeder {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async seed() {
-    // Clear existing users data
     await this.userModel.deleteMany();
 
-    // Generate dummy users
     const users = await Promise.all(
       Array.from({ length: 10 }, async () => ({
         firstname: faker.person.firstName(),
@@ -26,7 +24,6 @@ export class UserSeeder {
       }))
     );
 
-    // Insert users into the database
     await this.userModel.insertMany(users);
     console.log('Seeded 10 dummy users!');
   }
