@@ -9,6 +9,14 @@ export class EventsService {
     @InjectModel(Event.name) private eventModel: Model<Event>,
   ) {}
 
+  async createEvent(createEventDto: any): Promise<Event> {
+    try {
+      const newEvent = new this.eventModel(createEventDto);
+      return await newEvent.save();
+    } catch (error) {
+      throw new Error(`Error creating event: ${error.message}`);
+    }
+  }
 
   async findAll(): Promise<Event[]> {
     try {
