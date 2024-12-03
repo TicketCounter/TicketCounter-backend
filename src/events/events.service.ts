@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Event } from './events.schema';
-// import { AuthService } from 'src/auth/auth.service';
+import { Event, Participant } from './events.schema';
 
 @Injectable()
 export class EventsService {
   constructor(
     @InjectModel(Event.name) private eventModel: Model<Event>,
-    // private authService: AuthService
-) {}
+  ) {}
 
   async createEvent(createEventDto: any): Promise<Event> {
     try {
@@ -36,9 +34,10 @@ export class EventsService {
     }
   }
 
-  async update(id: string, eventDto): Promise<Event> {
+  async update(id: string, newEvent: object): Promise<Event> {
     try {
-      return await this.eventModel.findByIdAndUpdate(id, eventDto, { new: true }).exec();
+      const eventId = new Types.ObjectId(id);
+      return await this.eventModel.findByIdAndUpdate(eventId, newEvent, { new: true }).exec();
     } catch (error) {
       throw new Error(`Error updating event: ${error.message}`);
     }
@@ -46,47 +45,84 @@ export class EventsService {
 
   async delete(id: string): Promise<Event> {
     try {
-      return await this.eventModel.findByIdAndDelete(id).exec();
+      const eventId = new Types.ObjectId(id);
+      return await this.eventModel.findByIdAndDelete(eventId).exec();
     } catch (error) {
       throw new Error(`Error deleting event: ${error.message}`);
     }
   }
 
-  async addParticipant(id: string, name: string, phone: string): Promise<Event> {
+  async addParticipant(id: string, name: string, phone: string): Promise<Event[]> {
     try {
       const objectId = new Types.ObjectId(id);
-      const participantToAdd = {
-        id: new Types.ObjectId(),
+      const participantToAdd: Participant = {
         name: name,
         phone: phone,
         date: new Date(),
       };
+  
+      const updatedEvent = await this.eventModel.findByIdAndUpdate(
+        objectId,
+        { $push: { participants: participantToAdd } },
+        { new: true, useFindAndModify: false }
+      ).exec();
 
-      return await this.eventModel.findByIdAndUpdate(objectId, { $push: { participants: participantToAdd } }, { new: true }).exec();
+      const events = await this.eventModel.find().exec();
+  
+      if (!updatedEvent) {
+        throw new Error('Event not found');
+      }
+  
+      return events;
     } catch (error) {
       throw new Error(`Error adding participant: ${error.message}`);
     }
   }
 
-  async removeParticipant(id: string, participantId: string): Promise<Event> {
+  async removeParticipant(id: string, participantId: string): Promise<Event[]> {
     try {
       const objectId = new Types.ObjectId(id);
       const participantObjectId = new Types.ObjectId(participantId);
+      const updatedEvent =  await this.eventModel.findByIdAndUpdate(
+        objectId,
+        { $pull: { participants: { _id: participantObjectId } } },
+        { new: true }
+      ).exec();
 
-      const event = await this.eventModel.findById(objectId).exec();
-      if (!event) {
+      const events = await this.eventModel.find().exec();
+
+      if (!updatedEvent) {
         throw new Error('Event not found');
       }
 
-      const participantIndex = event.participants.findIndex((participant: any) => participant.id.equals(participantObjectId));
-      if (participantIndex === -1) {
-        throw new Error('Participant not found');
-      }
-
-      event.participants.splice(participantIndex, 1);
-      return await event.save();
+      return events;
     } catch (error) {
       throw new Error(`Error removing participant: ${error.message}`);
+    }
+  }
+
+  async getStats(): Promise<any> {
+    try {
+      const now = new Date();
+  
+      const totalEvents = await this.eventModel.countDocuments().exec();
+  
+      const totalParticipants = await this.eventModel.aggregate([
+        { $unwind: '$participants' },
+        { $count: 'count' },
+      ]).exec();
+  
+      const totalActiveEvents = await this.eventModel.countDocuments({ date: { $gte: now } }).exec();
+      const totalPassedEvents = await this.eventModel.countDocuments({ date: { $lt: now } }).exec();
+  
+      return {
+        totalEvents,
+        totalParticipants: totalParticipants[0]?.count || 0,
+        totalActiveEvents,
+        totalPassedEvents,
+      };
+    } catch (error) {
+      throw new Error(`Error getting stats: ${error.message}`);
     }
   }
 }

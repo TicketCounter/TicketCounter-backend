@@ -16,10 +16,13 @@ export class UserSeeder {
     // Generate dummy users
     const users = await Promise.all(
       Array.from({ length: 10 }, async () => ({
-        name: faker.person.fullName(),
-        role: faker.helpers.arrayElement(['admin', 'organizer', 'participant']),
+        firstname: faker.person.firstName(),
+        lastname: faker.person.lastName(),
         email: faker.internet.email(),
+        phone: faker.phone.number(),
         password: await bcrypt.hash(faker.internet.password(), 10),
+        role: 'organizer',
+        created_at: faker.date.past(),
       }))
     );
 

@@ -17,9 +17,11 @@ export class EventSeeder {
       title: faker.company.catchPhrase(),
       description: faker.lorem.paragraph(),
       date: faker.date.future(),
-      participants: Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, () =>
-        faker.person.fullName(),
-      ),
+      participants: Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, () => ({
+        name: faker.person.fullName(),
+        phone: faker.phone.number(),
+        date: faker.date.past(),
+      })),
     }));
 
     // Insert events into the database

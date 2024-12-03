@@ -63,20 +63,23 @@ export class AuthService {
     }
   }
 
-  async login(email: string, password: string): Promise<{ user: User; token: string }> {
+  async login(email: string, password: string): Promise< { token: string }> {
     try {
       const user = await this.userModel.findOne({ email });
+
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
 
       const isPasswordValid = await this.validatePassword(password, user.password);
+
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid credentials');
       }
 
       const token = await this.generateToken({ _id: user._id, email: user.email });
-      return { user, token };
+
+      return { token };
     } catch (error) {
       throw error instanceof UnauthorizedException
         ? error
@@ -109,7 +112,7 @@ export class AuthService {
       const updatedUser = await this.userModel.findByIdAndUpdate(
         userId,
         { $set: updates },
-        { new: true, runValidators: true },
+        { new: true, runValidators: true }, 
       );
       if (!updatedUser) {
         throw new NotFoundException(`User with ID ${userId} not found`);

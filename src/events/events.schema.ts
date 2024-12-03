@@ -2,6 +2,20 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema()
+export class Participant {
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
+  phone: string;
+
+  @Prop({ required: true })
+  date: Date;
+}
+
+export const ParticipantSchema = SchemaFactory.createForClass(Participant);
+
+@Schema()
 export class Event extends Document {
   @Prop({ required: true })
   title: string;
@@ -15,8 +29,8 @@ export class Event extends Document {
   @Prop({ default: Date.now })
   creation_date: Date;
 
-  @Prop([String])
-  participants: string[];
+  @Prop({ type: [ParticipantSchema], default: [] })
+  participants: Participant[];
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);
