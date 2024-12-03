@@ -43,6 +43,15 @@ export class EventsService {
     }
   }
 
+  async delete(id: string): Promise<Event> {
+    try {
+      const eventId = new Types.ObjectId(id);
+      return await this.eventModel.findByIdAndDelete(eventId).exec();
+    } catch (error) {
+      throw new Error(`Error deleting event: ${error.message}`);
+    }
+  }
+
   async addParticipant(id: string, name: string, phone: string): Promise<Event[]> {
     try {
       const objectId = new Types.ObjectId(id);
