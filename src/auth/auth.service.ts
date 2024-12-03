@@ -95,7 +95,7 @@ export class AuthService {
       }
       return user;
     } catch (error) {
-      throw new InternalServerErrorException('Failed to find user');
+      throw new NotFoundException('Failed to find user');
     }
   }
 
@@ -119,7 +119,7 @@ export class AuthService {
       }
       return updatedUser;
     } catch (error) {
-      throw new InternalServerErrorException('Failed to update user');
+      throw new NotFoundException('Failed to update user');
     }
   }
 
@@ -130,7 +130,7 @@ export class AuthService {
         throw new NotFoundException(`User with ID ${userId} not found`);
       }
     } catch (error) {
-      throw new InternalServerErrorException('Failed to delete user');
+      throw new NotFoundException('Failed to delete user');
     }
   }
 
