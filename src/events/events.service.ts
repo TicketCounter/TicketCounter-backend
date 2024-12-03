@@ -52,6 +52,33 @@ export class EventsService {
     }
   }
 
+  async addParticipant(id: string, name: string, phone: string): Promise<Event[]> {
+    try {
+      const objectId = new Types.ObjectId(id);
+      const participantToAdd: Participant = {
+        name: name,
+        phone: phone,
+        date: new Date(),
+      };
+  
+      const updatedEvent = await this.eventModel.findByIdAndUpdate(
+        objectId,
+        { $push: { participants: participantToAdd } },
+        { new: true, useFindAndModify: false }
+      ).exec();
+
+      const events = await this.eventModel.find().exec();
+  
+      if (!updatedEvent) {
+        throw new Error('Event not found');
+      }
+  
+      return events;
+    } catch (error) {
+      throw new Error(`Error adding participant: ${error.message}`);
+    }
+  }
+
   async removeParticipant(id: string, participantId: string): Promise<Event[]> {
     try {
       const objectId = new Types.ObjectId(id);
